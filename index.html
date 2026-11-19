@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FAF6F1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="猫猫记录">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta property="og:title" content="猫猫健康记录">
+<meta property="og:image" content="https://nengnengdoudou.github.io/neng_neng/icons/icon-512.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>猫猫健康记录</title>
+<style>
+  :root{
+    --bg:#FAF6F1;
+    --card:#FFFFFF;
+    --ink:#2C2724;
+    --ink2:#7A716A;
+    --ink3:#A79E96;
+    --line:#EDE3D9;
+    --pee:#D9963C;
+    --pee-soft:#FBF0DC;
+    --poop:#8A6A4B;
+    --poop-soft:#F1E8DE;
+    --danger:#CF4646;
+    --danger-soft:#FDEDED;
+    --warn:#D99427;
+    --warn-soft:#FDF3E2;
+    --ok:#4E9670;
+    --ok-soft:#ECF6F0;
+    --accent:#E07A4F;
+    --r:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.55;
+    padding-bottom:calc(72px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:520px;margin:0 auto;padding:0 16px}
+
+  /* ---------- 顶部 ---------- */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:linear-gradient(180deg,var(--bg) 70%,rgba(250,246,241,.85));
+    backdrop-filter:blur(8px);
+    padding:calc(14px + env(safe-area-inset-top)) 16px 8px;
+  }
+  .hd-row{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .hd-avatar{
+    width:38px;height:38px;border-radius:50%;flex:none;
+    background:linear-gradient(135deg,#F3D9C4,#E8B893);
+    display:flex;align-items:center;justify-content:center;font-size:19px;
+  }
+  .hd-name{font-size:16px;font-weight:600;letter-spacing:.2px}
+  .hd-sub{font-size:12px;color:var(--ink3);margin-top:1px}
+  .hd-date{margin-left:auto;font-size:12px;color:var(--ink3)}
+
+  /* ---------- 预警条 ---------- */
+  #alerts{max-width:520px;margin:8px auto 0;display:flex;flex-direction:column;gap:8px}
+  .alert{
+    display:flex;gap:9px;padding:11px 13px;border-radius:12px;
+    font-size:13.5px;line-height:1.5;border:1px solid transparent;
+  }
+  .alert .ico{flex:none;font-size:14px;line-height:1.45}
+  .alert.danger{background:var(--danger-soft);color:#8E2E2E;border-color:#F3D2D2}
+  .alert.warn{background:var(--warn-soft);color:#7F5510;border-color:#F0DFC0}
+  .alert.ok{background:var(--ok-soft);color:#2F6249;border-color:#D5EADE}
+
+  /* ---------- 卡片 ---------- */
+  .card{
+    background:var(--card);border-radius:var(--r);padding:16px;
+    box-shadow:0 1px 2px rgba(60,40,20,.045),0 6px 18px -10px rgba(60,40,20,.12);
+    margin-top:12px;
+  }
+  .card-title{font-size:13px;font-weight:600;color:var(--ink2);letter-spacing:.3px;margin:0 0 12px;display:flex;align-items:center;gap:6px}
+  .card-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+  /* ---------- 关键指标 ---------- */
+  .hero{display:flex;align-items:flex-end;gap:6px;margin:2px 0 4px}
+  .hero-num{font-size:40px;font-weight:600;line-height:1;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+  .hero-unit{font-size:14px;color:var(--ink2);padding-bottom:5px;font-weight:500}
+  .hero-label{font-size:12.5px;color:var(--ink3);margin-top:7px}
+  .hero.warn .hero-num{color:var(--warn)}
+  .hero.danger .hero-num{color:var(--danger)}
+
+  .stat-row{display:flex;gap:10px;margin-top:14px}
+  .stat{flex:1;background:#FBF7F2;border-radius:12px;padding:10px 12px}
+  .stat-k{font-size:11.5px;color:var(--ink3)}
+  .stat-v{font-size:19px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+  .stat-v small{font-size:11.5px;font-weight:400;color:var(--ink3);margin-left:2px}
+  .stat.p .stat-v{color:var(--pee)}
+  .stat.b .stat-v{color:var(--poop)}
+
+  /* ---------- 记录按钮 ---------- */
+  .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .rec-btn{
+    border:none;border-radius:var(--r);padding:16px 12px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:7px;
+    font-family:inherit;transition:transform .09s ease, box-shadow .18s ease;
+    box-shadow:0 1px 2px rgba(60,40,20,.05),0 8px 20px -14px rgba(60,40,20,.3);
+  }
+  .rec-btn:active{transform:scale(.975)}
+  .rec-btn .ring{
+    width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  }
+  .rec-btn .t{font-size:15.5px;font-weight:600}
+  .rec-btn .s{font-size:11.5px;opacity:.72;margin-top:-2px}
+  .rec-btn.pee{background:var(--pee-soft);color:#8A5A12}
+  .rec-btn.pee .ring{background:#F3DFB9}
+  .rec-btn.poop{background:var(--poop-soft);color:#5E452C}
+  .rec-btn.poop .ring{background:#E4D6C6}
+
+  /* ---------- 图表 ---------- */
+  .chart-wrap{position:relative;margin-top:4px}
+  .chart{
+    display:flex;align-items:flex-end;gap:2px;height:132px;
+    padding-top:16px;position:relative;overflow-x:auto;overflow-y:hidden;
+    scrollbar-width:none;
+  }
+  .chart::-webkit-scrollbar{display:none}
+  .bg-line{position:absolute;left:0;right:0;border-top:1px dashed var(--line);z-index:0}
+  .bar-g{
+    flex:1;min-width:16px;display:flex;flex-direction:column;align-items:center;
+    height:100%;justify-content:flex-end;position:relative;z-index:1;
+  }
+  .bars{display:flex;align-items:flex-end;gap:1.5px;height:100%;width:100%;justify-content:center}
+  .bar{width:6px;border-radius:3px 3px 0 0;transition:height .35s cubic-bezier(.4,0,.2,1)}
+  .bar.pee{background:var(--pee)}
+  .bar.poop{background:var(--poop);opacity:.82}
+  .bar.empty{background:var(--line);height:2px!important;border-radius:2px}
+  .x-labels{display:flex;gap:2px;margin-top:6px}
+  .x-labels span{flex:1;min-width:16px;text-align:center;font-size:9.5px;color:var(--ink3);overflow:hidden;white-space:nowrap}
+  .legend{display:flex;gap:14px;margin-top:10px;font-size:11.5px;color:var(--ink2)}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .seg{display:flex;gap:4px;background:#F4EEE7;border-radius:9px;padding:3px;margin-left:auto}
+  .seg button{
+    border:none;background:transparent;font-family:inherit;font-size:12px;color:var(--ink2);
+    padding:4px 10px;border-radius:7px;cursor:pointer;font-weight:500;
+  }
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+  /* ---------- 时间轴 / 列表 ---------- */
+  .day-group{margin-top:14px}
+  .day-hd{
+    display:flex;align-items:baseline;gap:8px;padding:0 4px 8px;
+    font-size:12.5px;color:var(--ink2);font-weight:600;
+  }
+  .day-hd .cnt{margin-left:auto;font-weight:400;color:var(--ink3);font-size:11.5px}
+  .item{
+    display:flex;align-items:center;gap:11px;background:var(--card);
+    border-radius:13px;padding:11px 13px;margin-bottom:7px;cursor:pointer;
+    box-shadow:0 1px 2px rgba(60,40,20,.04);
+    transition:background .15s;
+  }
+  .item:active{background:#FBF7F2}
+  .item-ico{
+    width:34px;height:34px;border-radius:10px;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+  }
+  .item-ico.pee{background:var(--pee-soft)}
+  .item-ico.poop{background:var(--poop-soft)}
+  .item-main{flex:1;min-width:0}
+  .item-t{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item-s{font-size:11.5px;color:var(--ink3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item-time{font-size:12px;color:var(--ink3);flex:none;font-variant-numeric:tabular-nums}
+  .flag-tag{
+    display:inline-block;background:var(--danger-soft);color:#9C3A3A;
+    font-size:10.5px;padding:1px 5px;border-radius:5px;margin-left:4px;
+    vertical-align:1px;
+  }
+
+  /* ---------- 空状态 ---------- */
+  .empty{
+    text-align:center;color:var(--ink3);font-size:13px;padding:26px 10px;line-height:1.7;
+  }
+  .empty .big{font-size:30px;display:block;margin-bottom:8px;opacity:.5}
+
+  /* ---------- 表单 ---------- */
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--ink2);font-weight:500;margin-bottom:7px}
+  .field .hint{font-size:11px;color:var(--ink3);margin-top:5px;line-height:1.5}
+  .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{
+    flex:1;min-width:0;border:1.5px solid var(--line);background:#fff;
+    border-radius:10px;padding:9px 6px;font-family:inherit;font-size:13px;
+    color:var(--ink2);cursor:pointer;text-align:center;transition:all .13s;
+    white-space:nowrap;
+  }
+  .opt.on{border-color:var(--accent);background:#FDF2EC;color:#A44A22;font-weight:600}
+  .opt.wide{flex:none;padding:7px 11px;font-size:12.5px}
+  .opt.danger-on{border-color:var(--danger);background:var(--danger-soft);color:#9C3A3A;font-weight:600}
+  input[type=text],input[type=datetime-local],input[type=number],textarea{
+    width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-family:inherit;font-size:14px;color:var(--ink);background:#fff;outline:none;
+  }
+  input:focus,textarea:focus{border-color:#E5B79C}
+  textarea{resize:vertical;min-height:56px}
+
+  /* ---------- 底部导航 ---------- */
+  nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:30;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom);
+    display:flex;
+  }
+  nav button{
+    flex:1;border:none;background:transparent;font-family:inherit;
+    padding:9px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:10.5px;color:var(--ink3);cursor:pointer;
+  }
+  nav button svg{width:21px;height:21px;stroke-width:1.7}
+  nav button.on{color:var(--accent);font-weight:600}
+
+  /* ---------- 弹层 ---------- */
+  .mask{
+    position:fixed;inset:0;background:rgba(40,30,22,.34);z-index:50;
+    opacity:0;pointer-events:none;transition:opacity .22s;
+  }
+  .mask.show{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;left:0;right:0;bottom:0;z-index:51;
+    background:#fff;border-radius:22px 22px 0 0;
+    transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1),visibility 0s linear .28s;
+    visibility:hidden;
+    max-height:92vh;display:flex;flex-direction:column;
+    box-shadow:0 -8px 40px rgba(60,40,20,.18);
+  }
+  .sheet.show{transform:translateY(0);visibility:visible;transition:transform .28s cubic-bezier(.32,.72,0,1)}
+  .sheet-hd{
+    padding:16px 18px 10px;display:flex;align-items:center;gap:8px;
+    border-bottom:1px solid #F6F0EA;flex:none;
+  }
+  .sheet-hd .ttl{font-size:16px;font-weight:600}
+  .sheet-hd .x{
+    margin-left:auto;border:none;background:#F4EEE7;width:28px;height:28px;border-radius:50%;
+    font-size:15px;color:var(--ink2);cursor:pointer;line-height:1;
+  }
+  .sheet-bd{padding:16px 18px 4px;overflow-y:auto;flex:1}
+  .sheet-ft{
+    padding:10px 18px calc(14px + env(safe-area-inset-bottom));
+    display:flex;gap:10px;flex:none;border-top:1px solid #F6F0EA;background:#fff;
+  }
+  .btn{
+    flex:1;border:none;border-radius:12px;padding:13px;font-family:inherit;
+    font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s;
+  }
+  .btn:active{opacity:.8}
+  .btn.primary{background:var(--accent);color:#fff;box-shadow:0 6px 16px -8px rgba(224,122,79,.8)}
+  .btn.ghost{background:#F4EEE7;color:var(--ink2);flex:none;padding:13px 18px}
+  .btn.del{background:var(--danger-soft);color:#9C3A3A;flex:none;padding:13px 16px}
+
+  .toast{
+    position:fixed;left:50%;bottom:88px;transform:translate(-50%,12px);
+    background:rgba(35,28,22,.9);color:#fff;font-size:13px;padding:9px 16px;
+    border-radius:20px;z-index:80;opacity:0;pointer-events:none;
+    transition:all .25s;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .foot-note{font-size:11.5px;color:var(--ink3);line-height:1.7;padding:22px 6px 8px;text-align:center}
+  .set-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #F6F0EA}
+  .set-row:last-child{border-bottom:none}
+  .set-row .k{font-size:14px}
+  .set-row .v{margin-left:auto;font-size:13px;color:var(--ink3)}
+  .set-row button{
+    margin-left:auto;border:1.5px solid var(--line);background:#fff;border-radius:9px;
+    padding:7px 13px;font-family:inherit;font-size:13px;color:var(--ink2);cursor:pointer;
+  }
+  .danger-txt{color:var(--danger)!important;border-color:#F0D2D2!important}
+
+  @media (max-width:360px){
+    .hero-num{font-size:34px}
+    .btn-grid{gap:9px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-row">
+    <div class="hd-avatar" id="avatar">🐱</div>
+    <div>
+      <div class="hd-name" id="hdName">我的猫</div>
+      <div class="hd-sub" id="hdSub">今天也要好好尿尿</div>
+    </div>
+    <div class="hd-date" id="hdDate"></div>
+  </div>
+</header>
+<div id="alerts"></div>
+
+<!-- ============ 今日 ============ -->
+<main class="app" id="v-today">
+  <section class="card">
+    <div class="card-title"><span class="dot"></span>距上次排尿</div>
+    <div class="hero" id="heroBox">
+      <span class="hero-num" id="heroNum">—</span>
+      <span class="hero-unit" id="heroUnit">小时前</span>
+    </div>
+    <div class="hero-label" id="heroLabel">还没有记录，点下面的按钮开始</div>
+    <div class="stat-row">
+      <div class="stat p">
+        <div class="stat-k">今日排尿</div>
+        <div class="stat-v"><span id="todayPee">0</span><small>次</small></div>
+      </div>
+      <div class="stat b">
+        <div class="stat-k">今日排便</div>
+        <div class="stat-v"><span id="todayPoop">0</span><small>次</small></div>
+      </div>
+      <div class="stat">
+        <div class="stat-k">近7天日均尿</div>
+        <div class="stat-v"><span id="avgPee">—</span><small>次</small></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="btn-grid">
+    <button class="rec-btn pee" onclick="openSheet('pee')">
+      <span class="ring">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3.2c0 0-6.4 7.1-6.4 11.1a6.4 6.4 0 0 0 12.8 0C18.4 10.3 12 3.2 12 3.2Z" fill="#D9963C"/>
+        </svg>
+      </span>
+      <span class="t">记排尿</span>
+      <span class="s">尿团大小 · 颜色</span>
+    </button>
+    <button class="rec-btn poop" onclick="openSheet('poop')">
+      <span class="ring">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <ellipse cx="12" cy="16.5" rx="7.5" ry="4.2" fill="#8A6A4B"/>
+          <ellipse cx="12" cy="11.2" rx="5.4" ry="3.4" fill="#8A6A4B"/>
+          <ellipse cx="12" cy="7" rx="3.1" ry="2.3" fill="#8A6A4B"/>
+        </svg>
+      </span>
+      <span class="t">记排便</span>
+      <span class="s">形态 · 量</span>
+    </button>
+  </div>
+
+  <section class="card">
+    <div class="card-title"><span class="dot"></span>今天的记录</div>
+    <div id="todayList"></div>
+  </section>
+  <div class="foot-note">数据只保存在这台设备的浏览器里<br>建议每周导出一次备份</div>
+</main>
+
+<!-- ============ 趋势 ============ -->
+<main class="app" id="v-trend" hidden>
+  <section class="card">
+    <div class="card-title">
+      <span class="dot"></span>次数趋势
+      <div class="seg" id="rangeSeg">
+        <button data-d="7" class="on">7天</button>
+        <button data-d="14">14天</button>
+        <button data-d="30">30天</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart" id="chart"></div>
+      <div class="x-labels" id="xLabels"></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--pee)"></i>排尿次数</span>
+      <span><i style="background:var(--poop)"></i>排便次数</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-title"><span class="dot"></span>这段时间</div>
+    <div id="trendStats"></div>
+  </section>
+  <div class="foot-note">柱子为 0 说明当天没有记录<br>也可能是漏记，记得及时补记</div>
+</main>
+
+<!-- ============ 历史 ============ -->
+<main class="app" id="v-history" hidden>
+  <div id="historyList"></div>
+</main>
+
+<!-- ============ 设置 ============ -->
+<main class="app" id="v-setting" hidden>
+  <section class="card">
+    <div class="card-title"><span class="dot"></span>猫咪档案</div>
+    <div class="field">
+      <label>名字</label>
+      <input type="text" id="fName" placeholder="例如：豆豆" oninput="saveCat()">
+    </div>
+    <div class="field">
+      <label>出生年份 / 年龄</label>
+      <input type="text" id="fAge" placeholder="例如：2012 年出生，13 岁" oninput="saveCat()">
+    </div>
+    <div class="field">
+      <label>体重（kg）</label>
+      <input type="number" id="fWeight" step="0.1" placeholder="例如：4.2" oninput="saveCat()">
+      <div class="hint">老年猫体重下降是重要信号，建议每月称一次记在这里。</div>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <label>病史备注</label>
+      <textarea id="fNote" placeholder="例如：2023 年 5 月尿闭一次，导尿住院 3 天；已绝育公猫。" oninput="saveCat()"></textarea>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-title"><span class="dot"></span>数据</div>
+    <div class="set-row">
+      <span class="k">导出备份（CSV）</span>
+      <button onclick="exportCSV()">导出</button>
+    </div>
+    <div class="set-row">
+      <span class="k">导出全部数据（JSON）</span>
+      <button onclick="exportJSON()">导出</button>
+    </div>
+    <div class="set-row">
+      <span class="k">从备份恢复</span>
+      <button onclick="document.getElementById('importFile').click()">选择文件</button>
+      <input type="file" id="importFile" accept=".json" hidden onchange="importJSON(this)">
+    </div>
+    <div class="set-row">
+      <span class="k" style="color:var(--danger)">清空所有记录</span>
+      <button class="danger-txt" onclick="clearAll()">清空</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-title"><span class="dot"></span>怎么判断</div>
+    <div style="font-size:13px;color:var(--ink2);line-height:1.85">
+      <b style="color:var(--ink)">正常参考</b><br>
+      · 排尿 2–4 次/天，尿团约乒乓球大小<br>
+      · 排便 1–2 次/天，成型、捡起不粘砂<br><br>
+      <b style="color:var(--ink)">需要警惕</b><br>
+      · 频繁进猫砂盆、蹲很久只尿几滴 → 可能尿闭<br>
+      · 尿团明显变小、一天比一天少<br>
+      · 尿里带血、尿液浑浊、猫排尿时叫<br>
+      · 超过 12 小时没有排尿<br>
+      · 在猫砂盆以外的地方尿（尤其只尿一点点）<br><br>
+      <b style="color:var(--danger)">这些情况请立刻去医院</b><br>
+      蹲盆尿不出 + 呕吐/不吃/精神差/肚子胀，是尿闭的典型表现，拖延 24–48 小时可能危及生命。本工具只做记录辅助，不能代替兽医诊断。
+    </div>
+  </section>
+  <div class="foot-note">猫猫健康记录 · 本地存储版</div>
+</main>
+
+<!-- ============ 底部导航 ============ -->
+<nav>
+  <button class="on" data-v="today" onclick="switchView('today')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/>
+    </svg>
+    <span>今日</span>
+  </button>
+  <button data-v="trend" onclick="switchView('trend')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19V5"/><path d="M4 19h16"/><path d="M7 15l4-4 3 3 5-6"/>
+    </svg>
+    <span>趋势</span>
+  </button>
+  <button data-v="history" onclick="switchView('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 6h16M4 12h16M4 18h10"/>
+    </svg>
+    <span>历史</span>
+  </button>
+  <button data-v="setting" onclick="switchView('setting')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1Z"/>
+    </svg>
+    <span>设置</span>
+  </button>
+</nav>
+
+<!-- ============ 记录弹层 ============ -->
+<div class="mask" id="mask" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-hd">
+    <span class="ttl" id="sheetTitle">记排尿</span>
+    <button class="x" onclick="closeSheet()">✕</button>
+  </div>
+  <div class="sheet-bd" id="sheetBody"></div>
+  <div class="sheet-ft" id="sheetFoot"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   存储层
+   ========================================================= */
+const KEY = 'catCare.v1';
+let memStore = null;
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return normalize(JSON.parse(raw));
+  }catch(e){ /* 忽略，走内存兜底 */ }
+  if(memStore) return normalize(JSON.parse(JSON.stringify(memStore)));
+  return { cat:{name:'',age:'',weight:'',note:''}, records:[] };
+}
+function normalize(d){
+  d = d || {};
+  d.cat = d.cat || {name:'',age:'',weight:'',note:''};
+  d.records = Array.isArray(d.records) ? d.records : [];
+  d.records.forEach(r=>{ if(!Array.isArray(r.flags)) r.flags=[]; });
+  return d;
+}
+let db = load();
+
+let storeWarned = false;
+function persist(){
+  try{ localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch(e){
+    memStore = JSON.parse(JSON.stringify(db));
+    if(!storeWarned){
+      storeWarned = true;
+      setTimeout(()=>toast('⚠ 当前环境无法保存数据，请下载此文件后用浏览器打开'), 100);
+    }
+  }
+}
+
+/* =========================================================
+   工具函数
+   ========================================================= */
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const dayKey = ts => { const d=new Date(ts); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const startOfDay = d => { const x=new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
+const WEEK = ['周日','周一','周二','周三','周四','周五','周六'];
+
+function fmtTime(ts){ const d=new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function fmtDay(ts){
+  const d=new Date(ts), today=startOfDay(Date.now());
+  if(startOfDay(ts)===today) return '今天';
+  if(startOfDay(ts)===today-864e5) return '昨天';
+  if(startOfDay(ts)===today-2*864e5) return '前天';
+  return `${d.getMonth()+1}月${d.getDate()}日`;
+}
+function fmtDayFull(ts){ const d=new Date(ts); return `${d.getMonth()+1}月${d.getDate()}日 ${WEEK[d.getDay()]}`; }
+function durText(ms){
+  const h = ms/36e5;
+  if(h < 1) return `${Math.max(1,Math.round(ms/6e4))} 分钟`;
+  if(h < 24) return `${h.toFixed(1)} 小时`;
+  return `${(h/24).toFixed(1)} 天`;
+}
+
+/* 选项字典 */
+const SIZE = {1:'小', 2:'中', 3:'大'};
+const SIZE_HINT = {1:'约硬币大小', 2:'约乒乓球', 3:'约高尔夫球'};
+const PEE_COLOR = {normal:'正常浅黄', dark:'偏深/浓', pale:'很淡/透明', blood:'带血丝', cloudy:'浑浊'};
+const POOP_SHAPE = {normal:'正常成型', soft:'偏软', diarrhea:'稀/水样', hard:'干硬颗粒'};
+const PEE_FLAGS = {STRAIN:'蹲久无尿', FREQ:'频繁进出', OUTSIDE:'砂盆外', CRY:'排尿叫唤', LICK:'频繁舔舐'};
+const POOP_FLAGS = {PAIN:'排便费力', BLOOD:'带血', MUCUS:'带黏液', HAIR:'带毛球'};
+const DANGER_FLAGS = ['STRAIN','OUTSIDE','BLOOD'];
+const FLAG_LABEL = Object.assign({}, PEE_FLAGS, POOP_FLAGS);
+
+/* =========================================================
+   统计 / 预警
+   ========================================================= */
+function recordsOf(type){ return db.records.filter(r=>r.type===type); }
+function inDay(ts, dayStart){ return ts>=dayStart && ts<dayStart+864e5; }
+
+function avgLastDays(type, days, skipToday){
+  const today = startOfDay(Date.now());
+  const from = today - days*864e5;
+  const to = skipToday ? today : today+864e5;
+  const list = db.records.filter(r=>r.type===type && r.ts>=from && r.ts<to);
+  return list.length / days;
+}
+
+function lastOf(type){
+  const l = recordsOf(type).sort((a,b)=>b.ts-a.ts);
+  return l[0] || null;
+}
+
+function floorSince(ts){ /* 从上一次记录至今的间隔，用于判断 */ return Date.now()-ts; }
+
+function computeAlerts(){
+  const out = [];
+  const now = Date.now();
+  const lastPee = lastOf('pee');
+  const recent24 = db.records.filter(r=>r.ts > now-864e5);
+
+  // 1) 干排尿 —— 最高优先级
+  const strain = recent24.filter(r=>r.type==='pee' && r.flags.includes('STRAIN'));
+  if(strain.length){
+    out.push({lv:'danger', ico:'⚠', txt:`最近 24 小时内出现 ${strain.length} 次「蹲着但尿不出」。这是尿道阻塞最典型的信号，请立即联系兽医，不要等到明天。`});
+  }
+  // 2) 砂盆外排尿
+  const outside = recent24.filter(r=>r.type==='pee' && r.flags.includes('OUTSIDE'));
+  if(outside.length){
+    out.push({lv:'warn', ico:'◎', txt:'记录到在猫砂盆外排尿。老年猫可能是关节痛、猫砂盆不洁，也可能是下泌尿问题的信号，值得留意。'});
+  }
+  // 3) 血尿 / 浑浊
+  const bad = db.records.filter(r=>r.type==='pee' && r.ts>now-3*864e5 && (r.color==='blood'||r.color==='cloudy'));
+  if(bad.length){
+    out.push({lv:'warn', ico:'◆', txt:`最近 3 天有 ${bad.length} 次尿液带血或浑浊，建议尽快做一次尿检。`});
+  }
+  // 4) 排尿间隔
+  if(lastPee){
+    const h = floorSince(lastPee.ts)/36e5;
+    if(h >= 14) out.push({lv:'danger', ico:'⏱', txt:`已经 ${durText(floorSince(lastPee.ts))} 没有排尿记录（上次 ${fmtDay(lastPee.ts)} ${fmtTime(lastPee.ts)}）。请检查猫砂盆，如果确实没尿，尽快就医。`});
+    else if(h >= 10) out.push({lv:'warn', ico:'⏱', txt:`已经 ${durText(floorSince(lastPee.ts))} 没有排尿了，比平时偏久，留意一下。`});
+  }else if(db.records.length){
+    out.push({lv:'warn', ico:'⏱', txt:'还没有任何排尿记录，先记一笔吧。'});
+  }
+  // 5) 今日次数明显低于基线
+  const todayCnt = recordsOf('pee').filter(r=>inDay(r.ts, startOfDay(now))).length;
+  const base = avgLastDays('pee', 7, true);
+  const hour = new Date().getHours();
+  if(hour >= 20 && base >= 2 && todayCnt <= base*0.5){
+    out.push({lv:'danger', ico:'▼', txt:`今天只记录到 ${todayCnt} 次排尿，近 7 天平均 ${base.toFixed(1)} 次。次数明显偏少，请确认是否真的尿少。`});
+  }else if(hour >= 20 && base >= 2 && todayCnt < base*0.75){
+    out.push({lv:'warn', ico:'▼', txt:`今天排尿 ${todayCnt} 次，少于近 7 天平均（${base.toFixed(1)} 次），继续观察。`});
+  }
+  // 6) 排便超 48h
+  const lastPoop = lastOf('poop');
+  if(lastPoop && floorSince(lastPoop.ts) > 48*36e5){
+    out.push({lv:'warn', ico:'◇', txt:`已经 ${durText(floorSince(lastPoop.ts))} 没有排便记录，老年猫便秘需留意，多观察饮水和食欲。`});
+  }
+  // 7) 全都好
+  if(!out.length && lastPee && floorSince(lastPee.ts) < 8*36e5){
+    out.push({lv:'ok', ico:'✓', txt:'目前一切正常，继续保持记录。'});
+  }
+  return out.slice(0,3);
+}
+
+/* =========================================================
+   渲染：顶部
+   ========================================================= */
+function renderHeader(){
+  const c = db.cat;
+  $('hdName').textContent = c.name || '我的猫';
+  $('avatar').textContent = '🐱';
+  const d = new Date();
+  $('hdDate').textContent = `${d.getMonth()+1}/${d.getDate()} ${WEEK[d.getDay()]}`;
+  $('hdSub').textContent = c.age ? `${c.age}${c.weight?` · ${c.weight}kg`:''}` : '今天也要好好尿尿';
+
+  const box = $('alerts');
+  box.innerHTML = computeAlerts().map(a=>
+    `<div class="alert ${a.lv}"><span class="ico">${a.ico}</span><span>${a.txt}</span></div>`
+  ).join('');
+}
+
+/* =========================================================
+   渲染：今日
+   ========================================================= */
+function renderToday(){
+  const today = startOfDay(Date.now());
+  const todayRecs = db.records.filter(r=>inDay(r.ts,today)).sort((a,b)=>b.ts-a.ts);
+  const peeCnt = todayRecs.filter(r=>r.type==='pee').length;
+  const poopCnt = todayRecs.filter(r=>r.type==='poop').length;
+
+  $('todayPee').textContent = peeCnt;
+  $('todayPoop').textContent = poopCnt;
+  const base = avgLastDays('pee',7,true);
+  $('avgPee').textContent = base ? base.toFixed(1) : '—';
+
+  // hero：距上次排尿
+  const last = lastOf('pee');
+  const heroBox = $('heroBox'), num = $('heroNum'), unit = $('heroUnit'), label = $('heroLabel');
+  heroBox.className = 'hero';
+  if(last){
+    const ms = floorSince(last.ts), h = ms/36e5;
+    if(h < 1){
+      num.textContent = Math.max(1,Math.round(ms/6e4));
+      unit.textContent = '分钟前';
+    }else if(h < 24){
+      num.textContent = h.toFixed(1);
+      unit.textContent = '小时前';
+    }else{
+      num.textContent = (h/24).toFixed(1);
+      unit.textContent = '天前';
+    }
+    if(h >= 14) heroBox.classList.add('danger');
+    else if(h >= 10) heroBox.classList.add('warn');
+    label.textContent = `${fmtDay(last.ts)} ${fmtTime(last.ts)} · ${SIZE[last.size]}尿团 · ${PEE_COLOR[last.color]||'未记录颜色'}`;
+  }else{
+    num.textContent = '—'; unit.textContent = '';
+    label.textContent = '还没有记录，点下面的按钮开始';
+  }
+
+  // 今日列表
+  const box = $('todayList');
+  if(!todayRecs.length){
+    box.innerHTML = `<div class="empty"><span class="big">🐾</span>今天还没有记录<br>猫砂盆里有发现，就点上面记一笔</div>`;
+    return;
+  }
+  box.innerHTML = todayRecs.map(itemHTML).join('');
+}
+
+function itemHTML(r){
+  const isPee = r.type==='pee';
+  const flags = r.flags || [];
+  const dangerFlag = flags.some(f=>DANGER_FLAGS.includes(f));
+  let title, sub;
+  if(isPee){
+    title = `${SIZE[r.size]||'中'}尿团 · ${PEE_COLOR[r.color]||'正常浅黄'}`;
+  }else{
+    title = `${SIZE[r.size]||'中'} · ${POOP_SHAPE[r.shape]||'正常成型'}`;
+  }
+  const tagHTML = flags.map(f=>`<span class="flag-tag">${FLAG_LABEL[f]||f}</span>`).join('');
+  sub = tagHTML + (r.note ? `<span style="color:var(--ink2)">${esc(r.note)}</span>` : '');
+  const iconSVG = isPee
+    ? `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3.2c0 0-6.4 7.1-6.4 11.1a6.4 6.4 0 0 0 12.8 0C18.4 10.3 12 3.2 12 3.2Z" fill="#D9963C"/></svg>`
+    : `<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="16.5" rx="7.5" ry="4.2" fill="#8A6A4B"/><ellipse cx="12" cy="11.2" rx="5.4" ry="3.4" fill="#8A6A4B"/><ellipse cx="12" cy="7" rx="3.1" ry="2.3" fill="#8A6A4B"/></svg>`;
+  return `<div class="item" onclick="openSheet('${r.type}','${r.id}')">
+    <div class="item-ico ${r.type}">${iconSVG}</div>
+    <div class="item-main">
+      <div class="item-t">${title}${dangerFlag?'<span class="flag-tag" style="background:#CF4646;color:#fff">异常</span>':''}</div>
+      ${sub?`<div class="item-s">${sub}</div>`:''}
+    </div>
+    <div class="item-time">${fmtTime(r.ts)}</div>
+  </div>`;
+}
+
+/* =========================================================
+   渲染：趋势
+   ========================================================= */
+let rangeDays = 7;
+function renderTrend(){
+  const today = startOfDay(Date.now());
+  const days = [];
+  for(let i=rangeDays-1;i>=0;i--) days.push(today - i*864e5);
+
+  const data = days.map(ds=>{
+    const recs = db.records.filter(r=>inDay(r.ts,ds));
+    return { ds, pee: recs.filter(r=>r.type==='pee').length, poop: recs.filter(r=>r.type==='poop').length };
+  });
+
+  const maxV = Math.max(4, ...data.map(d=>Math.max(d.pee,d.poop)));
+  const chart = $('chart');
+  chart.innerHTML = data.map(d=>{
+    const ph = d.pee ? Math.max(6, d.pee/maxV*100) : 0;
+    const bh = d.poop ? Math.max(6, d.poop/maxV*100) : 0;
+    return `<div class="bar-g" title="${fmtDayFull(d.ds)}：尿 ${d.pee} 次 / 便 ${d.poop} 次">
+      <div class="bars">
+        <div class="bar ${d.pee?'pee':'empty'}" style="height:${ph}%"></div>
+        <div class="bar ${d.poop?'poop':'empty'}" style="height:${bh}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // 网格线（25% / 50% / 75% 参考线）
+  [25,50,75].forEach(p=>{
+    const ln = document.createElement('div');
+    ln.className='bg-line';
+    ln.style.top = ((100-p)*0.01*132 + 16) + 'px';
+    ln.style.opacity=.6;
+    chart.appendChild(ln);
+  });
+
+  // x 轴标签：根据密度显示
+  const step = rangeDays<=7 ? 1 : (rangeDays<=14 ? 2 : 5);
+  $('xLabels').innerHTML = data.map((d,i)=>{
+    const dt = new Date(d.ds);
+    const show = (rangeDays-1-i) % step === 0 || i===data.length-1;
+    return `<span>${show?`${dt.getMonth()+1}/${dt.getDate()}`:''}</span>`;
+  }).join('');
+
+  // 统计
+  const totalPee = data.reduce((s,d)=>s+d.pee,0);
+  const totalPoop = data.reduce((s,d)=>s+d.poop,0);
+  const activeDays = data.filter(d=>d.pee>0).length || 1;
+  const zeroPeeDays = data.filter(d=>d.pee===0).length;
+  const maxPee = Math.max(...data.map(d=>d.pee));
+
+  // 最长无尿间隔
+  const pees = recordsOf('pee').map(r=>r.ts).sort((a,b)=>a-b);
+  let maxGap = 0;
+  for(let i=1;i<pees.length;i++) maxGap = Math.max(maxGap, pees[i]-pees[i-1]);
+
+  const rows = [
+    ['排尿合计', `${totalPee} 次  ·  日均 ${(totalPee/rangeDays).toFixed(1)}`],
+    ['排便合计', `${totalPoop} 次  ·  日均 ${(totalPoop/rangeDays).toFixed(1)}`],
+    ['单日最多排尿', `${maxPee} 次`],
+    ['无排尿记录天数', `${zeroPeeDays} 天${zeroPeeDays>0?'（含漏记）':''}`],
+    ['最长无尿间隔', maxGap ? durText(maxGap) : '—'],
+  ];
+  $('trendStats').innerHTML = rows.map(([k,v])=>
+    `<div class="set-row"><span class="k">${k}</span><span class="v">${v}</span></div>`
+  ).join('');
+}
+
+/* =========================================================
+   渲染：历史
+   ========================================================= */
+function renderHistory(){
+  const box = $('historyList');
+  if(!db.records.length){
+    box.innerHTML = `<div class="empty" style="padding-top:60px"><span class="big">📋</span>还没有任何记录<br>回到「今日」记第一笔吧</div>`;
+    return;
+  }
+  const groups = {};
+  db.records.slice().sort((a,b)=>b.ts-a.ts).forEach(r=>{
+    const k = dayKey(r.ts);
+    (groups[k] = groups[k] || []).push(r);
+  });
+  box.innerHTML = Object.keys(groups).map(k=>{
+    const list = groups[k];
+    const pee = list.filter(r=>r.type==='pee').length;
+    const poop = list.filter(r=>r.type==='poop').length;
+    return `<div class="day-group">
+      <div class="day-hd">${fmtDayFull(list[0].ts)}<span class="cnt">尿 ${pee} · 便 ${poop}</span></div>
+      ${list.map(itemHTML).join('')}
+    </div>`;
+  }).join('');
+}
+
+/* =========================================================
+   视图切换
+   ========================================================= */
+function switchView(v){
+  ['today','trend','history','setting'].forEach(x=>{
+    $('v-'+x).hidden = (x!==v);
+  });
+  document.querySelectorAll('nav button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.v===v);
+  });
+  window.scrollTo({top:0,behavior:'instant'});
+  if(v==='trend') renderTrend();
+  if(v==='history') renderHistory();
+  if(v==='setting') fillCatForm();
+}
+
+/* =========================================================
+   记录弹层
+   ========================================================= */
+let sheetState = null;
+
+function openSheet(type, id){
+  const existing = id ? db.records.find(r=>r.id===id) : null;
+  const now = new Date();
+  const localNow = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  sheetState = {
+    type,
+    id: id || null,
+    size: existing ? existing.size : 2,
+    color: existing ? (existing.color||'normal') : 'normal',
+    shape: existing ? (existing.shape||'normal') : 'normal',
+    flags: existing ? existing.flags.slice() : [],
+    note: existing ? (existing.note||'') : '',
+    ts: existing ? existing.ts : null,
+    localNow
+  };
+
+  $('sheetTitle').textContent = existing
+    ? (type==='pee'?'修改排尿记录':'修改排便记录')
+    : (type==='pee'?'记一次排尿':'记一次排便');
+
+  renderSheet();
+  $('mask').classList.add('show');
+  $('sheet').classList.add('show');
+}
+
+function renderSheet(){
+  const s = sheetState;
+  const isPee = s.type==='pee';
+  const sizeOpts = [1,2,3].map(v=>
+    `<button class="opt ${s.size===v?'on':''}" onclick="setField('size',${v})">${SIZE[v]}</button>`
+  ).join('');
+
+  let body = '';
+
+  if(isPee){
+    const colorOpts = Object.entries(PEE_COLOR).map(([k,label])=>
+      `<button class="opt ${s.color===k?'on':''} ${k==='blood'&&s.color===k?'danger-on':''}" onclick="setField('color','${k}')">${label}</button>`
+    ).join('');
+    const flagOpts = Object.entries(PEE_FLAGS).map(([k,label])=>{
+      const on = s.flags.includes(k);
+      const danger = DANGER_FLAGS.includes(k);
+      return `<button class="opt wide ${on?(danger?'danger-on':'on'):''}" onclick="toggleFlag('${k}')">${label}</button>`;
+    }).join('');
+    body = `
+      <div class="field">
+        <label>尿团大小</label>
+        <div class="opts">${sizeOpts}</div>
+        <div class="hint">${SIZE_HINT[s.size]}（正常约乒乓球大小；突然变小要留意）</div>
+      </div>
+      <div class="field">
+        <label>尿液颜色</label>
+        <div class="opts">${colorOpts}</div>
+      </div>
+      <div class="field">
+        <label>有没有这些情况</label>
+        <div class="opts">${flagOpts}</div>
+        <div class="hint">「蹲久无尿」是最需要警惕的一项，勾上会立刻报警。</div>
+      </div>`;
+  }else{
+    const shapeOpts = Object.entries(POOP_SHAPE).map(([k,label])=>
+      `<button class="opt ${s.shape===k?'on':''}" onclick="setField('shape','${k}')">${label}</button>`
+    ).join('');
+    const flagOpts = Object.entries(POOP_FLAGS).map(([k,label])=>{
+      const on = s.flags.includes(k);
+      return `<button class="opt wide ${on?'on':''}" onclick="toggleFlag('${k}')">${label}</button>`;
+    }).join('');
+    body = `
+      <div class="field">
+        <label>量</label>
+        <div class="opts">${sizeOpts}</div>
+        <div class="hint">${SIZE_HINT[s.size]}</div>
+      </div>
+      <div class="field">
+        <label>形态</label>
+        <div class="opts" style="gap:7px">${shapeOpts}</div>
+      </div>
+      <div class="field">
+        <label>有没有这些情况</label>
+        <div class="opts">${flagOpts}</div>
+      </div>`;
+  }
+
+  body += `
+    <div class="field">
+      <label>时间</label>
+      <input type="datetime-local" id="fTime" value="${s.localNow}" onchange="onTimeChange(this.value)">
+      <div class="hint">补记昨天或早上的，改这里就行。</div>
+    </div>
+    <div class="field" style="margin-bottom:6px">
+      <label>备注（可选）</label>
+      <textarea id="fMemo" placeholder="例如：早上吐了一次 / 喝了挺多水" oninput="sheetState.note=this.value">${esc(s.note)}</textarea>
+    </div>`;
+
+  $('sheetBody').innerHTML = body;
+
+  const delBtn = s.id ? `<button class="btn del" onclick="deleteRecord('${s.id}')">删除</button>` : '';
+  $('sheetFoot').innerHTML = `
+    ${delBtn}
+    <button class="btn ghost" onclick="closeSheet()">取消</button>
+    <button class="btn primary" onclick="saveRecord()">保存</button>`;
+}
+
+function setField(k,v){ sheetState[k]=v; renderSheet(); }
+function toggleFlag(k){
+  const i = sheetState.flags.indexOf(k);
+  if(i>=0) sheetState.flags.splice(i,1); else sheetState.flags.push(k);
+  renderSheet();
+}
+function onTimeChange(v){
+  if(!v) return;
+  const ts = new Date(v).getTime();
+  if(!isNaN(ts)) sheetState.ts = ts;
+}
+
+function closeSheet(){
+  $('mask').classList.remove('show');
+  $('sheet').classList.remove('show');
+  sheetState = null;
+}
+
+function saveRecord(){
+  const s = sheetState;
+  const timeInput = $('fTime');
+  let ts = s.ts;
+  if(timeInput && timeInput.value){
+    const t = new Date(timeInput.value).getTime();
+    if(!isNaN(t)) ts = t;
+  }
+  if(!ts) ts = Date.now();
+
+  const data = {
+    type: s.type, ts, size: s.size,
+    flags: s.flags.slice(),
+    note: s.note.trim()
+  };
+  if(s.type==='pee'){ data.color = s.color; }
+  else { data.shape = s.shape; }
+
+  if(s.id){
+    const i = db.records.findIndex(r=>r.id===s.id);
+    if(i>=0) db.records[i] = Object.assign({}, db.records[i], data);
+    toast('已修改');
+  }else{
+    data.id = 'r'+Date.now()+Math.random().toString(36).slice(2,6);
+    db.records.push(data);
+    toast(s.type==='pee'?'排尿已记录':'排便已记录');
+  }
+  persist();
+  closeSheet();
+  renderAll();
+}
+
+function deleteRecord(id){
+  if(!confirm('删除这条记录？')) return;
+  db.records = db.records.filter(r=>r.id!==id);
+  persist();
+  closeSheet();
+  renderAll();
+  toast('已删除');
+}
+
+let toastTimer;
+function toast(msg){
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 1800);
+}
+
+/* =========================================================
+   猫咪档案
+   ========================================================= */
+function fillCatForm(){
+  const c = db.cat;
+  $('fName').value = c.name||'';
+  $('fAge').value = c.age||'';
+  $('fWeight').value = c.weight||'';
+  $('fNote').value = c.note||'';
+}
+function saveCat(){
+  db.cat = {
+    name: $('fName').value.trim(),
+    age: $('fAge').value.trim(),
+    weight: $('fWeight').value.trim(),
+    note: $('fNote').value.trim()
+  };
+  persist();
+  $('hdName').textContent = db.cat.name || '我的猫';
+  $('hdSub').textContent = db.cat.age ? `${db.cat.age}${db.cat.weight?` · ${db.cat.weight}kg`:''}` : '今天也要好好尿尿';
+}
+
+/* =========================================================
+   导入导出
+   ========================================================= */
+function download(name, content, mime){
+  const blob = new Blob(['\ufeff'+content], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function exportCSV(){
+  if(!db.records.length) return toast('还没有记录');
+  const rows = [['日期','时间','类型','量','颜色/形态','异常','备注']];
+  db.records.slice().sort((a,b)=>a.ts-b.ts).forEach(r=>{
+    const d = new Date(r.ts);
+    rows.push([
+      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,
+      fmtTime(r.ts),
+      r.type==='pee'?'排尿':'排便',
+      SIZE[r.size]||'',
+      r.type==='pee' ? (PEE_COLOR[r.color]||'') : (POOP_SHAPE[r.shape]||''),
+      (r.flags||[]).map(f=>FLAG_LABEL[f]||f).join(' / '),
+      (r.note||'').replace(/[\r\n,]/g,' ')
+    ]);
+  });
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  download(`猫猫排便排尿记录_${dayKey(Date.now())}.csv`, csv, 'text/csv;charset=utf-8');
+  toast('已导出 CSV');
+}
+function exportJSON(){
+  download(`猫猫数据备份_${dayKey(Date.now())}.json`, JSON.stringify(db,null,2), 'application/json');
+  toast('已导出备份');
+}
+function importJSON(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data || !Array.isArray(data.records)) throw new Error('格式不对');
+      if(db.records.length && !confirm('恢复会覆盖当前所有记录，确定吗？')) { input.value=''; return; }
+      db = normalize(data);
+      db.records.forEach(r=>{ if(!r.id) r.id='r'+Math.random().toString(36).slice(2,10); });
+      persist();
+      renderAll();
+      fillCatForm();
+      toast('已恢复');
+    }catch(err){
+      alert('文件读不出来，请确认是本工具导出的 JSON 备份。');
+    }
+    input.value='';
+  };
+  reader.readAsText(f);
+}
+function clearAll(){
+  if(!confirm('会删掉全部记录，不可恢复。确定清空？')) return;
+  if(!confirm('再确认一次：真的要清空所有记录吗？')) return;
+  db.records = [];
+  persist();
+  renderAll();
+  toast('已清空');
+}
+
+/* =========================================================
+   初始化
+   ========================================================= */
+function renderAll(){
+  renderHeader();
+  renderToday();
+  if(!$('v-trend').hidden) renderTrend();
+  if(!$('v-history').hidden) renderHistory();
+}
+
+document.querySelectorAll('#rangeSeg button').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('#rangeSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    rangeDays = Number(b.dataset.d);
+    renderTrend();
+  };
+});
+
+// 每秒刷新一次"距上次排尿"和预警（分钟级变化）
+setInterval(()=>{
+  if(!$('v-today').hidden) renderHeader(), renderToday();
+}, 30000);
+
+renderAll();
+fillCatForm();
+
+/* PWA：注册离线缓存 */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+/* PWA：动态 manifest —— 保证安装到桌面时保留当前访问参数 */
+(function(){
+  try{
+    if(!location.search) return;
+    const base = location.pathname.replace(/[^/]*$/,'');
+    const m = {
+      name:'猫猫健康记录', short_name:'猫猫记录',
+      description:'记录猫咪每日排尿排便，监控尿闭风险',
+      lang:'zh-CN',
+      start_url:'./'+location.search, scope:'./',
+      display:'standalone', orientation:'portrait',
+      background_color:'#FAF6F1', theme_color:'#FAF6F1',
+      icons:[
+        {src:base+'icons/icon-192.png', sizes:'192x192', type:'image/png'},
+        {src:base+'icons/icon-512.png', sizes:'512x512', type:'image/png'},
+        {src:base+'icons/icon-512-maskable.png', sizes:'512x512', type:'image/png', purpose:'maskable'}
+      ]
+    };
+    const link = document.querySelector('link[rel="manifest"]');
+    if(link) link.href = URL.createObjectURL(new Blob([JSON.stringify(m)], {type:'application/manifest+json'}));
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
