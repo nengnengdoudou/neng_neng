@@ -357,7 +357,11 @@
 <main class="app" id="v-trend" hidden>
   <section class="card">
     <div class="card-title">
-      <span class="dot"></span>次数趋势
+      <span class="dot"></span><span id="chartTitle">次数趋势</span>
+      <div class="seg" id="chartModeSeg">
+        <button data-m="count" class="on">次数</button>
+        <button data-m="size">尿团大小</button>
+      </div>
       <div class="seg" id="rangeSeg">
         <button data-d="7" class="on">7天</button>
         <button data-d="14">14天</button>
@@ -389,6 +393,21 @@
 <!-- ============ 设置 ============ -->
 <main class="app" id="v-setting" hidden>
   <section class="card">
+    <div class="card-title"><span class="dot"></span>数据状态</div>
+    <div id="storageStatus" style="font-size:13px;color:var(--ink2);line-height:1.8"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-title"><span class="dot"></span>预警基线</div>
+    <div id="baselineInfo" style="font-size:13px;color:var(--ink2);line-height:1.8;margin-bottom:10px"></div>
+    <div class="field">
+      <label>手动指定：它通常隔多久尿一次（小时，留空 = 自动学习）</label>
+      <input type="number" id="fInterval" min="4" max="72" placeholder="例如：24" oninput="saveBaseline()">
+      <div class="hint">它会先自动统计近 14 天的排尿间隔；填了数字就以你填的为准。超过「基线 × 1.5」黄色提醒、「基线 × 2」红色警告。</div>
+    </div>
+  </section>
+
+  <section class="card">
     <div class="card-title"><span class="dot"></span>猫咪档案</div>
     <div class="field">
       <label>名字</label>
@@ -403,10 +422,12 @@
       <input type="number" id="fWeight" step="0.1" placeholder="例如：4.2" oninput="saveCat()">
       <div class="hint">老年猫体重下降是重要信号，建议每月称一次记在这里。</div>
     </div>
-    <div class="field" style="margin-bottom:0">
+    <div class="field" style="margin-bottom:4px">
       <label>病史备注</label>
       <textarea id="fNote" placeholder="例如：2023 年 5 月尿闭一次，导尿住院 3 天；已绝育公猫。" oninput="saveCat()"></textarea>
     </div>
+    <button class="btn primary" style="width:100%;margin-top:10px" onclick="saveCat(true)">保存资料</button>
+    <div class="hint" style="text-align:center;margin-top:7px">平时边填边自动保存；不确定时点一下这个按钮最保险</div>
   </section>
 
   <section class="card">
@@ -510,19 +531,46 @@ function normalize(d){
   d = d || {};
   d.cat = d.cat || {name:'',age:'',weight:'',note:''};
   d.records = Array.isArray(d.records) ? d.records : [];
-  d.records.forEach(r=>{ if(!Array.isArray(r.flags)) r.flags=[]; });
+  d.settings = d.settings || {peeIntervalManual:null};
+  d.meta = d.meta || {};
+  d.records.forEach(r=>{
+    if(!Array.isArray(r.flags)) r.flags=[];
+    if(r.type==='pee' && typeof COLOR_MAP !== 'undefined'){
+      // 旧版颜色值兼容映射
+      if(r.color && PEE_COLOR[r.color] === undefined) r.color = COLOR_MAP[r.color] || 'normal';
+      if(!r.color) r.color = 'normal';
+    }
+  });
   return d;
 }
 let db = load();
+db = normalize(db); // 字典定义后再次规范化，完成旧数据颜色值迁移
 
 let storeWarned = false;
+let STORAGE_OK = true;
+
+function probeStorage(){
+  try{
+    const k = KEY+'.probe';
+    localStorage.setItem(k, '1');
+    const ok = localStorage.getItem(k)==='1';
+    localStorage.removeItem(k);
+    return ok;
+  }catch(e){ return false; }
+}
+
 function persist(){
-  try{ localStorage.setItem(KEY, JSON.stringify(db)); }
-  catch(e){
+  const raw = JSON.stringify(db);
+  try{
+    localStorage.setItem(KEY, raw);
+    if(localStorage.getItem(KEY) !== raw) throw new Error('readback failed');
+    STORAGE_OK = true;
+  }catch(e){
     memStore = JSON.parse(JSON.stringify(db));
+    STORAGE_OK = false;
     if(!storeWarned){
       storeWarned = true;
-      setTimeout(()=>toast('⚠ 当前环境无法保存数据，请下载此文件后用浏览器打开'), 100);
+      setTimeout(()=>toast('⚠ 此环境无法保存数据，关闭后记录会丢失！'), 200);
     }
   }
 }
@@ -556,7 +604,8 @@ function durText(ms){
 /* 选项字典 */
 const SIZE = {1:'小', 2:'中', 3:'大'};
 const SIZE_HINT = {1:'约硬币大小', 2:'约乒乓球', 3:'约高尔夫球'};
-const PEE_COLOR = {normal:'正常浅黄', dark:'偏深/浓', pale:'很淡/透明', blood:'带血丝', cloudy:'浑浊'};
+const PEE_COLOR = {normal:'淡黄', dark:'偏深黄', abnormal:'异常色（茶褐/粉血）'};
+const COLOR_MAP = {normal:'normal', dark:'dark', pale:'normal', blood:'abnormal', cloudy:'abnormal'};
 const POOP_SHAPE = {normal:'正常成型', soft:'偏软', diarrhea:'稀/水样', hard:'干硬颗粒'};
 const PEE_FLAGS = {STRAIN:'蹲久无尿', FREQ:'频繁进出', OUTSIDE:'砂盆外', CRY:'排尿叫唤', LICK:'频繁舔舐'};
 const POOP_FLAGS = {PAIN:'排便费力', BLOOD:'带血', MUCUS:'带黏液', HAIR:'带毛球'};
@@ -584,6 +633,27 @@ function lastOf(type){
 
 function floorSince(ts){ /* 从上一次记录至今的间隔，用于判断 */ return Date.now()-ts; }
 
+/* 自动学习：它平时多久尿一次（近14天排尿间隔的中位数，单位小时） */
+function peeBaseline(){
+  const manual = db.settings && Number(db.settings.peeIntervalManual);
+  if(manual && manual > 0) return manual;
+  const recs = recordsOf('pee').map(r=>r.ts).sort((a,b)=>a-b);
+  const cutoff = Date.now() - 14*864e5;
+  const gaps = [];
+  let prev = null;
+  for(const ts of recs){
+    if(ts < cutoff){ prev = ts; continue; }
+    if(prev !== null){
+      const g = (ts - prev)/36e5;
+      if(g <= 24*7) gaps.push(g);   // 超过7天的间隔视为漏记，不纳入
+    }
+    prev = ts;
+  }
+  if(gaps.length < 3) return null;  // 数据不足，学习中
+  gaps.sort((a,b)=>a-b);
+  return Math.max(6, Math.round(gaps[Math.floor(gaps.length/2)] * 10) / 10);
+}
+
 function computeAlerts(){
   const out = [];
   const now = Date.now();
@@ -601,33 +671,33 @@ function computeAlerts(){
     out.push({lv:'warn', ico:'◎', txt:'记录到在猫砂盆外排尿。老年猫可能是关节痛、猫砂盆不洁，也可能是下泌尿问题的信号，值得留意。'});
   }
   // 3) 血尿 / 浑浊
-  const bad = db.records.filter(r=>r.type==='pee' && r.ts>now-3*864e5 && (r.color==='blood'||r.color==='cloudy'));
+  const bad = db.records.filter(r=>r.type==='pee' && r.ts>now-3*864e5 && r.color==='abnormal');
   if(bad.length){
-    out.push({lv:'warn', ico:'◆', txt:`最近 3 天有 ${bad.length} 次尿液带血或浑浊，建议尽快做一次尿检。`});
+    out.push({lv:'warn', ico:'◆', txt:`最近 3 天有 ${bad.length} 次尿液颜色异常（茶褐色/粉色带血），建议尽快做一次尿检。`});
   }
   // 4) 排尿间隔
+  const baseH = peeBaseline();
   if(lastPee){
     const h = floorSince(lastPee.ts)/36e5;
-    if(h >= 14) out.push({lv:'danger', ico:'⏱', txt:`已经 ${durText(floorSince(lastPee.ts))} 没有排尿记录（上次 ${fmtDay(lastPee.ts)} ${fmtTime(lastPee.ts)}）。请检查猫砂盆，如果确实没尿，尽快就医。`});
-    else if(h >= 10) out.push({lv:'warn', ico:'⏱', txt:`已经 ${durText(floorSince(lastPee.ts))} 没有排尿了，比平时偏久，留意一下。`});
+    if(baseH){
+      if(h >= baseH*2) out.push({lv:'danger', ico:'⏱', txt:`已经 ${durText(floorSince(lastPee.ts))} 没有排尿（它平时约每 ${baseH} 小时尿一次），远超它的规律。请检查猫砂盆，如果确实没尿，尽快就医。`});
+      else if(h >= baseH*1.5) out.push({lv:'warn', ico:'⏱', txt:`已经 ${durText(floorSince(lastPee.ts))} 没有排尿了，比它平时的节奏（约每 ${baseH} 小时）明显偏久，留意一下。`});
+    }
   }else if(db.records.length){
     out.push({lv:'warn', ico:'⏱', txt:'还没有任何排尿记录，先记一笔吧。'});
-  }
-  // 5) 今日次数明显低于基线
-  const todayCnt = recordsOf('pee').filter(r=>inDay(r.ts, startOfDay(now))).length;
-  const base = avgLastDays('pee', 7, true);
-  const hour = new Date().getHours();
-  if(hour >= 20 && base >= 2 && todayCnt <= base*0.5){
-    out.push({lv:'danger', ico:'▼', txt:`今天只记录到 ${todayCnt} 次排尿，近 7 天平均 ${base.toFixed(1)} 次。次数明显偏少，请确认是否真的尿少。`});
-  }else if(hour >= 20 && base >= 2 && todayCnt < base*0.75){
-    out.push({lv:'warn', ico:'▼', txt:`今天排尿 ${todayCnt} 次，少于近 7 天平均（${base.toFixed(1)} 次），继续观察。`});
   }
   // 6) 排便超 48h
   const lastPoop = lastOf('poop');
   if(lastPoop && floorSince(lastPoop.ts) > 48*36e5){
     out.push({lv:'warn', ico:'◇', txt:`已经 ${durText(floorSince(lastPoop.ts))} 没有排便记录，老年猫便秘需留意，多观察饮水和食欲。`});
   }
-  // 7) 全都好
+  // 7) 存储异常
+  if(!STORAGE_OK){
+    out.length = 0;
+    out.push({lv:'danger', ico:'⚠', txt:'数据无法保存：此浏览器环境禁止存储。请关闭后改用系统浏览器直接输入网址打开，记录才不会丢。'});
+    return out.slice(0,1);
+  }
+  // 8) 全都好
   if(!out.length && lastPee && floorSince(lastPee.ts) < 8*36e5){
     out.push({lv:'ok', ico:'✓', txt:'目前一切正常，继续保持记录。'});
   }
@@ -681,9 +751,14 @@ function renderToday(){
       num.textContent = (h/24).toFixed(1);
       unit.textContent = '天前';
     }
-    if(h >= 14) heroBox.classList.add('danger');
-    else if(h >= 10) heroBox.classList.add('warn');
-    label.textContent = `${fmtDay(last.ts)} ${fmtTime(last.ts)} · ${SIZE[last.size]}尿团 · ${PEE_COLOR[last.color]||'未记录颜色'}`;
+    const baseH = peeBaseline();
+    if(baseH){
+      if(h >= baseH*2) heroBox.classList.add('danger');
+      else if(h >= baseH*1.5) heroBox.classList.add('warn');
+      label.textContent = `${fmtDay(last.ts)} ${fmtTime(last.ts)} · ${SIZE[last.size]}尿团 · ${PEE_COLOR[last.color]||'淡黄'}（它平时约每 ${baseH} 小时尿一次）`;
+    }else{
+      label.textContent = `${fmtDay(last.ts)} ${fmtTime(last.ts)} · ${SIZE[last.size]}尿团（正在学习它的排尿规律，多记几天自动适配）`;
+    }
   }else{
     num.textContent = '—'; unit.textContent = '';
     label.textContent = '还没有记录，点下面的按钮开始';
@@ -704,9 +779,10 @@ function itemHTML(r){
   const dangerFlag = flags.some(f=>DANGER_FLAGS.includes(f));
   let title, sub;
   if(isPee){
-    title = `${SIZE[r.size]||'中'}尿团 · ${PEE_COLOR[r.color]||'正常浅黄'}`;
+    const cTail = r.color==='abnormal' ? ' · 异常色' : (r.color==='dark' ? ' · 偏深' : '');
+    title = `${SIZE[r.size]||'中'}尿团${cTail}`;
   }else{
-    title = `${SIZE[r.size]||'中'} · ${POOP_SHAPE[r.shape]||'正常成型'}`;
+    title = `${SIZE[r.size]||'中'}便 · ${POOP_SHAPE[r.shape]||'成型'}`;
   }
   const tagHTML = flags.map(f=>`<span class="flag-tag">${FLAG_LABEL[f]||f}</span>`).join('');
   sub = tagHTML + (r.note ? `<span style="color:var(--ink2)">${esc(r.note)}</span>` : '');
@@ -727,6 +803,8 @@ function itemHTML(r){
    渲染：趋势
    ========================================================= */
 let rangeDays = 7;
+let chartMode = 'count';   // 'count' 次数 | 'size' 尿团大小
+
 function renderTrend(){
   const today = startOfDay(Date.now());
   const days = [];
@@ -734,18 +812,33 @@ function renderTrend(){
 
   const data = days.map(ds=>{
     const recs = db.records.filter(r=>inDay(r.ts,ds));
-    return { ds, pee: recs.filter(r=>r.type==='pee').length, poop: recs.filter(r=>r.type==='poop').length };
+    const pees = recs.filter(r=>r.type==='pee');
+    return { ds,
+      pee: pees.length,
+      poop: recs.filter(r=>r.type==='poop').length,
+      sizeAvg: pees.length ? pees.reduce((s,r)=>s+(r.size||2),0)/pees.length : null
+    };
   });
 
-  const maxV = Math.max(4, ...data.map(d=>Math.max(d.pee,d.poop)));
+  const maxV = chartMode==='count'
+    ? Math.max(4, ...data.map(d=>Math.max(d.pee,d.poop)))
+    : 3;  // 尿团大小 1~3
   const chart = $('chart');
   chart.innerHTML = data.map(d=>{
-    const ph = d.pee ? Math.max(6, d.pee/maxV*100) : 0;
-    const bh = d.poop ? Math.max(6, d.poop/maxV*100) : 0;
-    return `<div class="bar-g" title="${fmtDayFull(d.ds)}：尿 ${d.pee} 次 / 便 ${d.poop} 次">
+    let ph, bh, pTitle;
+    if(chartMode==='count'){
+      ph = d.pee ? Math.max(6, d.pee/maxV*100) : 0;
+      bh = d.poop ? Math.max(6, d.poop/maxV*100) : 0;
+      pTitle = `${fmtDayFull(d.ds)}：尿 ${d.pee} 次 / 便 ${d.poop} 次`;
+    }else{
+      ph = d.sizeAvg ? Math.max(6, d.sizeAvg/maxV*100) : 0;
+      bh = 0;
+      pTitle = d.sizeAvg ? `${fmtDayFull(d.ds)}：尿团平均 ${d.sizeAvg.toFixed(1)}（1小/2中/3大）` : `${fmtDayFull(d.ds)}：无排尿记录`;
+    }
+    return `<div class="bar-g" title="${pTitle}">
       <div class="bars">
-        <div class="bar ${d.pee?'pee':'empty'}" style="height:${ph}%"></div>
-        <div class="bar ${d.poop?'poop':'empty'}" style="height:${bh}%"></div>
+        <div class="bar ${ph?'pee':'empty'}" style="height:${ph}%"></div>
+        <div class="bar ${bh?'poop':'empty'}" style="height:${bh}%"></div>
       </div>
     </div>`;
   }).join('');
@@ -767,10 +860,15 @@ function renderTrend(){
     return `<span>${show?`${dt.getMonth()+1}/${dt.getDate()}`:''}</span>`;
   }).join('');
 
+  // 卡片标题 + 图例随模式切换
+  $('chartTitle').textContent = chartMode==='count' ? '次数趋势' : '尿团大小趋势';
+  document.querySelector('.legend').innerHTML = chartMode==='count'
+    ? `<span><i style="background:var(--pee)"></i>排尿次数</span><span><i style="background:var(--poop)"></i>排便次数</span>`
+    : `<span><i style="background:var(--pee)"></i>当天平均尿团（1小 / 2中 / 3大）</span><span style="color:var(--ink3)">柱子变矮 = 尿量变少，要留意</span>`;
+
   // 统计
   const totalPee = data.reduce((s,d)=>s+d.pee,0);
   const totalPoop = data.reduce((s,d)=>s+d.poop,0);
-  const activeDays = data.filter(d=>d.pee>0).length || 1;
   const zeroPeeDays = data.filter(d=>d.pee===0).length;
   const maxPee = Math.max(...data.map(d=>d.pee));
 
@@ -786,6 +884,24 @@ function renderTrend(){
     ['无排尿记录天数', `${zeroPeeDays} 天${zeroPeeDays>0?'（含漏记）':''}`],
     ['最长无尿间隔', maxGap ? durText(maxGap) : '—'],
   ];
+
+  // 尿团变化：本期 vs 上期
+  const cur = data.filter(d=>d.sizeAvg).map(d=>d.sizeAvg);
+  const prevDays = [];
+  for(let i=rangeDays;i<rangeDays*2;i++) prevDays.push(startOfDay(Date.now()) - i*864e5);
+  const prev = prevDays.map(ds=>{
+    const p = db.records.filter(r=>inDay(r.ts,ds) && r.type==='pee');
+    return p.length ? p.reduce((s,r)=>s+(r.size||2),0)/p.length : null;
+  }).filter(v=>v);
+  if(cur.length && prev.length){
+    const ca = cur.reduce((s,v)=>s+v,0)/cur.length;
+    const pa = prev.reduce((s,v)=>s+v,0)/prev.length;
+    const diff = ca - pa;
+    const trend = diff > 0.25 ? '变大 ↑' : (diff < -0.25 ? '变小 ↓（留意尿量）' : '基本持平');
+    rows.push([`近${rangeDays}天尿团 vs 之前`, `${ca.toFixed(1)} vs ${pa.toFixed(1)} · ${trend}`]);
+  }else{
+    rows.push([`尿团大小`, `记录还不够，暂无法比较`]);
+  }
   $('trendStats').innerHTML = rows.map(([k,v])=>
     `<div class="set-row"><span class="k">${k}</span><span class="v">${v}</span></div>`
   ).join('');
@@ -1011,14 +1127,52 @@ function toast(msg){
 /* =========================================================
    猫咪档案
    ========================================================= */
+function saveBaseline(){
+  const v = $('fInterval').value.trim();
+  db.settings.peeIntervalManual = v ? Number(v) : null;
+  persist();
+  renderBaseline();
+}
+function renderBaseline(){
+  const el = $('baselineInfo');
+  if(!el) return;
+  const manual = db.settings.peeIntervalManual;
+  const auto = (function(){
+    const m = db.settings.peeIntervalManual;
+    const recs = recordsOf('pee').map(r=>r.ts).sort((a,b)=>a-b);
+    const cutoff = Date.now() - 14*864e5;
+    const gaps = [];
+    let prev = null;
+    for(const ts of recs){
+      if(ts < cutoff){ prev = ts; continue; }
+      if(prev !== null){ const g=(ts-prev)/36e5; if(g<=24*7) gaps.push(g); }
+      prev = ts;
+    }
+    if(gaps.length < 3) return null;
+    gaps.sort((a,b)=>a-b);
+    return Math.max(6, Math.round(gaps[Math.floor(gaps.length/2)]*10)/10);
+  })();
+  let txt;
+  if(manual){
+    txt = `当前基线：<b>${manual} 小时</b>（手动指定）`;
+    if(auto) txt += `<br>它近 14 天的实际规律约每 <b>${auto} 小时</b> 一次，可参考`;
+  }else if(auto){
+    txt = `自动学习结果：它平时约每 <b>${auto} 小时</b> 排尿一次<br>（基于近 14 天记录，会随新记录自动更新）`;
+  }else{
+    txt = `记录还少，暂时不按间隔预警（避免误报）<br>多记几天后，这里会显示它自己的排尿规律`;
+  }
+  el.innerHTML = txt;
+}
 function fillCatForm(){
   const c = db.cat;
   $('fName').value = c.name||'';
   $('fAge').value = c.age||'';
   $('fWeight').value = c.weight||'';
   $('fNote').value = c.note||'';
+  $('fInterval').value = (db.settings && db.settings.peeIntervalManual) || '';
+  renderBaseline();
 }
-function saveCat(){
+function saveCat(showToast){
   db.cat = {
     name: $('fName').value.trim(),
     age: $('fAge').value.trim(),
@@ -1028,6 +1182,24 @@ function saveCat(){
   persist();
   $('hdName').textContent = db.cat.name || '我的猫';
   $('hdSub').textContent = db.cat.age ? `${db.cat.age}${db.cat.weight?` · ${db.cat.weight}kg`:''}` : '今天也要好好尿尿';
+  if(showToast) toast('资料已保存 ✓');
+  renderStorageStatus();
+}
+
+function renderStorageStatus(){
+  const el = $('storageStatus');
+  if(!el) return;
+  const meta = db.meta || {};
+  const last = meta.lastSeen;
+  let html;
+  if(!STORAGE_OK){
+    html = `<span style="color:var(--danger);font-weight:600">⚠ 数据无法保存</span><br>这个浏览器环境不允许存储数据，关闭页面后填写的内容会丢失。<br>请改用手机自带的系统浏览器直接输入网址打开，或换 Chrome/Edge 打开。`;
+  }else{
+    html = `数据保存正常 ✓<br>已存记录 <b>${db.records.length}</b> 条 · 猫咪资料 ${db.cat && (db.cat.name||db.cat.age||db.cat.note) ? '已填写' : '未填写'}`;
+    if(last) html += `<br>上次打开：${fmtDayFull(last)} ${fmtTime(last)}`;
+    html += `<br><span style="color:var(--ink3);font-size:11.5px">重要数据建议每周在下方导出一份备份</span>`;
+  }
+  el.innerHTML = html;
 }
 
 /* =========================================================
@@ -1104,6 +1276,7 @@ function renderAll(){
   renderToday();
   if(!$('v-trend').hidden) renderTrend();
   if(!$('v-history').hidden) renderHistory();
+  renderStorageStatus();
 }
 
 document.querySelectorAll('#rangeSeg button').forEach(b=>{
@@ -1114,11 +1287,25 @@ document.querySelectorAll('#rangeSeg button').forEach(b=>{
     renderTrend();
   };
 });
+document.querySelectorAll('#chartModeSeg button').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('#chartModeSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    chartMode = b.dataset.m;
+    renderTrend();
+  };
+});
 
 // 每秒刷新一次"距上次排尿"和预警（分钟级变化）
 setInterval(()=>{
   if(!$('v-today').hidden) renderHeader(), renderToday();
 }, 30000);
+
+/* 初始化：存储健康检查 + 打开时间记录 */
+STORAGE_OK = probeStorage();
+db.meta = db.meta || {};
+db.meta.lastSeen = Date.now();
+if(STORAGE_OK) persist();
 
 renderAll();
 fillCatForm();
