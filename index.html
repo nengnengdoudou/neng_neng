@@ -776,6 +776,7 @@ document.addEventListener('visibilitychange', ()=>{
 /* 关闭/切出页面前，尽力把未同步的数据抢传一次 */
 async function flushNow(){
   if(!syncEnabled() || !syncDirty) return;
+  if(syncState === 'syncing') return;   // 自动同步正在进行时不要抢传，避免版本号撞车(409)
   try{
     const H = syncHeaders();
     const g = await fetchTO(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}?t=${Date.now()}`, {headers:H}, 8000);
