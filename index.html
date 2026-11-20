@@ -577,6 +577,36 @@ function persistLocalOnly(){
       setTimeout(()=>toast('⚠ 此环境无法保存数据，关闭后记录会丢失！'), 200);
     }
   }
+  saveCookieBackup();
+}
+
+/* =========================================================
+   Cookie 副备份：浏览器清缓存常清 localStorage，但一般不碰 Cookie
+   ========================================================= */
+function saveCookieBackup(){
+  try{
+    const raw = b64u8encode(JSON.stringify(db));
+    const SHARD = 2900;
+    const shards = [];
+    for(let i=0;i<raw.length;i+=SHARD) shards.push(raw.slice(i, i+SHARD));
+    if(shards.length > 9) return;                   // 太大就放弃，云端仍是主备份
+    const exp = ';path=/;max-age=2592000;SameSite=Lax';
+    document.cookie = 'cc_n=' + shards.length + exp;
+    shards.forEach((s,i)=>{ document.cookie = 'cc_' + i + '=' + s + exp; });
+  }catch(e){}
+}
+function loadCookieBackup(){
+  try{
+    const m = document.cookie.match(/(?:^|;\s*)cc_n=(\d+)/);
+    if(!m) return null;
+    let raw = '';
+    for(let i=0;i<(+m[1]);i++){
+      const mm = document.cookie.match(new RegExp('(?:^|;\\s*)cc_' + i + '=([^;]+)'));
+      if(!mm) return null;
+      raw += mm[1];
+    }
+    return JSON.parse(b64u8decode(raw));
+  }catch(e){ return null; }
 }
 function persist(){
   db.meta = db.meta || {};
@@ -693,7 +723,7 @@ async function putRemote(){
 function scheduleSync(){
   if(!syncEnabled()) return;
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(()=>syncNow('save'), 1500);
+  syncTimer = setTimeout(()=>syncNow('save'), 400);
 }
 
 /* 统一同步流程：启动恢复 / 保存上传 / 手动同步共用，串行排队避免撞车 */
@@ -732,12 +762,13 @@ async function doSync(reason){
   }
   if(syncState === 'ok') syncDirty = false;
   renderStorageStatus();
+  if(typeof renderToday === 'function' && $('v-today') && !$('v-today').hidden){ renderHeader(); renderToday(); }
 }
 
-/* 网络恢复/切回应用时自动补传；每分钟重试一次未同步的数据 */
+/* 网络恢复/切回应用时自动补传；每 15 秒重试一次未同步的数据 */
 setInterval(()=>{
   if(syncEnabled() && syncDirty && syncState !== 'syncing') syncNow('retry');
-}, 60000);
+}, 15000);
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState === 'visible' && syncEnabled() && syncDirty && syncState !== 'syncing') syncNow('retry');
 });
@@ -885,7 +916,11 @@ function computeAlerts(){
     out.push({lv:'danger', ico:'⚠', txt:'数据无法保存：此浏览器环境禁止存储。请关闭后改用系统浏览器直接输入网址打开，记录才不会丢。'});
     return out.slice(0,1);
   }
-  // 8) 全都好
+  // 8) 云端还没备份成功：让用户在首页就能看到，不必进设置页
+  if(typeof syncEnabled === 'function' && syncEnabled() && typeof syncDirty !== 'undefined' && syncDirty && syncState === 'error'){
+    out.push({lv:'warn', ico:'☁', txt:'有改动还没备份到云端（网络不通），已暂存在本机，联网后会自动补传。'});
+  }
+  // 9) 全都好
   if(!out.length && lastPee && floorSince(lastPee.ts) < 8*36e5){
     out.push({lv:'ok', ico:'✓', txt:'目前一切正常，继续保持记录。'});
   }
@@ -1497,6 +1532,11 @@ setInterval(()=>{
 }, 30000);
 
 /* 初始化：存储健康检查 + 打开时间记录 */
+/* 本机存储被清空时，先用 Cookie 副备份顶一下（云端恢复随后会做最终合并） */
+if(!db.records.length && !catHas(db.cat)){
+  const ck = loadCookieBackup();
+  if(ck && ((ck.records||[]).length || catHas(ck.cat))) db = normalize(ck);
+}
 STORAGE_OK = probeStorage();
 db.meta = db.meta || {};
 db.meta.lastSeen = Date.now();
