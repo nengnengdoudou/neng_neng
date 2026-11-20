@@ -1,5 +1,5 @@
 /* 猫猫健康记录 - 离线缓存 Service Worker */
-const CACHE = 'cat-care-v5';
+const CACHE = 'cat-care-v6';
 const ASSETS = [
   './',
   './index.html',
