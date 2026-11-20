@@ -685,59 +685,45 @@ function scheduleSync(){
   syncTimer = setTimeout(()=>syncNow('save'), 1500);
 }
 
+/* 统一同步流程：启动恢复 / 保存上传 / 手动同步共用，串行排队避免撞车 */
 function syncNow(reason){
   if(!syncEnabled()) return;
-  syncChain = syncChain.then(doSync).catch(()=>{ syncState='error'; renderStorageStatus(); });
-  function doSync(){
-    syncState = 'syncing'; renderStorageStatus();
-    return (async ()=>{
-      try{
-        syncFileSha = null;
-        const remote = await fetchRemote();
-        if(remote){
-          const merged = mergeData(db, remote);
-          if(JSON.stringify(merged) !== JSON.stringify(db)){
-            db = merged;
-            persistLocalOnly();
-            renderAll(); fillCatForm();
-          }
-        }
-        await putRemote();
-        syncState = 'ok'; syncMsg = fmtTime(Date.now());
-      }catch(e){
-        syncState = 'error'; syncMsg = String((e && e.message) || e).slice(0, 60);
-      }
-      renderStorageStatus();
-    })();
-  }
+  syncChain = syncChain.then(doSync.bind(null, reason)).catch(e=>{
+    syncState = 'error'; syncMsg = String((e && e.message) || e).slice(0, 60); renderStorageStatus();
+  });
 }
 
-async function startupSync(){
-  if(!syncEnabled()){ renderStorageStatus(); return; }
+async function doSync(reason){
   syncState = 'syncing'; renderStorageStatus();
   try{
     syncFileSha = null;
     const remote = await fetchRemote();
     if(remote){
-      const before = JSON.stringify(db);
+      const remoteJson = JSON.stringify(remote);
       const merged = mergeData(db, remote);
-      if(JSON.stringify(merged) !== before){
-        const added = merged.records.length - db.records.length;
+      if(JSON.stringify(merged) !== JSON.stringify(db)){
+        const restored = db.records.length === 0 && merged.records.length > 0;
         db = merged;
         persistLocalOnly();
         renderAll(); fillCatForm();
-        if(added > 0 || catHas(db.cat)) toast(`已从云端恢复数据 ✓（${db.records.length} 条记录）`);
+        if(restored) toast(`已从云端恢复数据 ✓（${db.records.length} 条记录）`);
       }
-      if(JSON.stringify(remote) !== JSON.stringify(db)) await putRemote();
+      // 云端内容与本地一致时不重复上传
+      if(JSON.stringify(db) !== remoteJson) await putRemote();
     }else{
-      await putRemote();                              // 首次备份：在云端创建文件
-      if(db.records.length) toast('已建立云端备份 ✓');
+      await putRemote();                                // 首次备份：在云端创建文件
     }
     syncState = 'ok'; syncMsg = fmtTime(Date.now());
   }catch(e){
     syncState = 'error'; syncMsg = String((e && e.message) || e).slice(0, 60);
   }
   renderStorageStatus();
+}
+
+function startupSync(){
+  if(!syncEnabled()){ renderStorageStatus(); return; }
+  syncState = 'syncing'; renderStorageStatus();
+  syncNow('startup');
 }
 
 /* =========================================================
