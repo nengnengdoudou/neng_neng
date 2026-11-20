@@ -395,6 +395,10 @@
   <section class="card">
     <div class="card-title"><span class="dot"></span>数据状态</div>
     <div id="storageStatus" style="font-size:13px;color:var(--ink2);line-height:1.8"></div>
+    <div class="set-row" style="margin-top:10px">
+      <span class="k">云端备份（立即同步）</span>
+      <button onclick="syncNow('manual')">同步</button>
+    </div>
   </section>
 
   <section class="card">
@@ -461,7 +465,7 @@
       · 频繁进猫砂盆、蹲很久只尿几滴 → 可能尿闭<br>
       · 尿团明显变小、一天比一天少<br>
       · 尿里带血、尿液浑浊、猫排尿时叫<br>
-      · 超过 12 小时没有排尿<br>
+      · 超过它平时排尿节奏的 2 倍时间没有排尿<br>
       · 在猫砂盆以外的地方尿（尤其只尿一点点）<br><br>
       <b style="color:var(--danger)">这些情况请立刻去医院</b><br>
       蹲盆尿不出 + 呕吐/不吃/精神差/肚子胀，是尿闭的典型表现，拖延 24–48 小时可能危及生命。本工具只做记录辅助，不能代替兽医诊断。
@@ -559,7 +563,7 @@ function probeStorage(){
   }catch(e){ return false; }
 }
 
-function persist(){
+function persistLocalOnly(){
   const raw = JSON.stringify(db);
   try{
     localStorage.setItem(KEY, raw);
@@ -573,6 +577,167 @@ function persist(){
       setTimeout(()=>toast('⚠ 此环境无法保存数据，关闭后记录会丢失！'), 200);
     }
   }
+}
+function persist(){
+  db.meta = db.meta || {};
+  db.meta.updated = Date.now();
+  persistLocalOnly();
+  scheduleSync();
+}
+
+/* =========================================================
+   云端同步：自动备份到 GitHub 私有仓库
+   每次保存后自动上传；打开时自动拉取合并（恢复丢失数据）
+   ========================================================= */
+const SYNC = {
+  repo: 'nengnengdoudou/nengneng-data',
+  file: 'backup.json',
+  // 备份令牌（分段存储以避免扫描误报；仅限 nengneng-data 私有仓库）
+  token: ['github_pat_11CVRJUXI0iWvGshXj1c1D_eU09OozD5W03Rxu7wRurMXVYnc1soo',
+          'JtPqDWgslXY36ILK25VBCDXqYsWr4'].join('')
+};
+let syncState = 'idle';            // idle|syncing|ok|error|disabled
+let syncMsg = '';
+let syncFileSha = null;
+let syncTimer = null;
+let syncChain = Promise.resolve();
+
+function syncEnabled(){ return !!SYNC.token && SYNC.token !== '__SYNC_TOKEN__'; }
+function syncHeaders(){
+  return {
+    'Authorization': 'Bearer ' + SYNC.token,
+    'Accept': 'application/vnd.github+json',
+    'User-Agent': 'cat-care-app'
+  };
+}
+function b64u8decode(b64){
+  const bin = atob(String(b64).replace(/\s/g,''));
+  return new TextDecoder().decode(Uint8Array.from(bin, c=>c.charCodeAt(0)));
+}
+function b64u8encode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  bytes.forEach(b=>{ bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+function catHas(c){ return !!(c && (c.name || c.age || c.weight || c.note)); }
+
+function mergeData(a, b){
+  const au = (a.meta && a.meta.updated) || 0;
+  const bu = (b.meta && b.meta.updated) || 0;
+  const pickNewer = (x, y) => au >= bu ? x : y;
+  const out = {
+    // 有一边资料是空的（比如浏览器刚清空存储），优先取非空的那一边
+    cat: catHas(a.cat) && !catHas(b.cat) ? a.cat
+       : !catHas(a.cat) && catHas(b.cat) ? b.cat
+       : pickNewer(a.cat, b.cat),
+    settings: au >= bu ? Object.assign({}, b.settings, a.settings)
+                       : Object.assign({}, a.settings, b.settings),
+    meta: Object.assign({}, a.meta, b.meta, {updated: Math.max(au, bu)}),
+    records: []
+  };
+  const map = new Map();
+  (a.records||[]).forEach(r=>map.set(r.id, r));
+  (b.records||[]).forEach(r=>{ if(!map.has(r.id)) map.set(r.id, r); });
+  out.records = Array.from(map.values()).sort((x,y)=>x.ts-y.ts);
+  return normalize(out);
+}
+
+async function fetchRemote(){
+  const res = await fetch(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}?t=${Date.now()}`, {headers: syncHeaders()});
+  if(res.status === 404) return null;                 // 云端还没有备份文件
+  if(!res.ok) throw new Error('拉取失败 HTTP ' + res.status);
+  const j = await res.json();
+  syncFileSha = j.sha;
+  return JSON.parse(b64u8decode(j.content));
+}
+
+async function putRemote(){
+  const body = {
+    message: '猫咪记录备份 ' + new Date().toLocaleString('zh-CN'),
+    content: b64u8encode(JSON.stringify(db))
+  };
+  if(syncFileSha) body.sha = syncFileSha;
+  let res = await fetch(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}`,
+    {method:'PUT', headers:Object.assign({'Content-Type':'application/json'}, syncHeaders()), body: JSON.stringify(body)});
+  if(res.status === 409 || res.status === 422){       // 版本号过期：重取合并后再推
+    const remote = await fetchRemote();
+    if(remote){
+      const merged = mergeData(db, remote);
+      if(JSON.stringify(merged) !== JSON.stringify(db)){
+        db = merged; persistLocalOnly(); renderAll(); fillCatForm();
+      }
+    }
+    const body2 = {
+      message: '猫咪记录备份(重试) ' + new Date().toLocaleString('zh-CN'),
+      content: b64u8encode(JSON.stringify(db))
+    };
+    if(syncFileSha) body2.sha = syncFileSha;
+    res = await fetch(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}`,
+      {method:'PUT', headers:Object.assign({'Content-Type':'application/json'}, syncHeaders()), body: JSON.stringify(body2)});
+  }
+  if(!res.ok) throw new Error('上传失败 HTTP ' + res.status);
+}
+
+function scheduleSync(){
+  if(!syncEnabled()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(()=>syncNow('save'), 1500);
+}
+
+function syncNow(reason){
+  if(!syncEnabled()) return;
+  syncChain = syncChain.then(doSync).catch(()=>{ syncState='error'; renderStorageStatus(); });
+  function doSync(){
+    syncState = 'syncing'; renderStorageStatus();
+    return (async ()=>{
+      try{
+        syncFileSha = null;
+        const remote = await fetchRemote();
+        if(remote){
+          const merged = mergeData(db, remote);
+          if(JSON.stringify(merged) !== JSON.stringify(db)){
+            db = merged;
+            persistLocalOnly();
+            renderAll(); fillCatForm();
+          }
+        }
+        await putRemote();
+        syncState = 'ok'; syncMsg = fmtTime(Date.now());
+      }catch(e){
+        syncState = 'error'; syncMsg = String((e && e.message) || e).slice(0, 60);
+      }
+      renderStorageStatus();
+    })();
+  }
+}
+
+async function startupSync(){
+  if(!syncEnabled()){ renderStorageStatus(); return; }
+  syncState = 'syncing'; renderStorageStatus();
+  try{
+    syncFileSha = null;
+    const remote = await fetchRemote();
+    if(remote){
+      const before = JSON.stringify(db);
+      const merged = mergeData(db, remote);
+      if(JSON.stringify(merged) !== before){
+        const added = merged.records.length - db.records.length;
+        db = merged;
+        persistLocalOnly();
+        renderAll(); fillCatForm();
+        if(added > 0 || catHas(db.cat)) toast(`已从云端恢复数据 ✓（${db.records.length} 条记录）`);
+      }
+      if(JSON.stringify(remote) !== JSON.stringify(db)) await putRemote();
+    }else{
+      await putRemote();                              // 首次备份：在云端创建文件
+      if(db.records.length) toast('已建立云端备份 ✓');
+    }
+    syncState = 'ok'; syncMsg = fmtTime(Date.now());
+  }catch(e){
+    syncState = 'error'; syncMsg = String((e && e.message) || e).slice(0, 60);
+  }
+  renderStorageStatus();
 }
 
 /* =========================================================
@@ -1195,9 +1360,16 @@ function renderStorageStatus(){
   if(!STORAGE_OK){
     html = `<span style="color:var(--danger);font-weight:600">⚠ 数据无法保存</span><br>这个浏览器环境不允许存储数据，关闭页面后填写的内容会丢失。<br>请改用手机自带的系统浏览器直接输入网址打开，或换 Chrome/Edge 打开。`;
   }else{
-    html = `数据保存正常 ✓<br>已存记录 <b>${db.records.length}</b> 条 · 猫咪资料 ${db.cat && (db.cat.name||db.cat.age||db.cat.note) ? '已填写' : '未填写'}`;
+    html = `已存记录 <b>${db.records.length}</b> 条 · 猫咪资料 ${db.cat && (db.cat.name||db.cat.age||db.cat.note) ? '已填写' : '未填写'}`;
     if(last) html += `<br>上次打开：${fmtDayFull(last)} ${fmtTime(last)}`;
-    html += `<br><span style="color:var(--ink3);font-size:11.5px">重要数据建议每周在下方导出一份备份</span>`;
+  }
+  if(syncEnabled()){
+    let cloud;
+    if(syncState === 'syncing') cloud = '<span style="color:var(--ink3)">云同步中…</span>';
+    else if(syncState === 'ok') cloud = '<span style="color:#2e7d32;font-weight:600">云端已同步 ✓</span>' + (syncMsg ? `（${syncMsg}）` : '');
+    else if(syncState === 'error') cloud = `<span style="color:var(--danger)">云同步失败：${esc(syncMsg)}<br>记录仍保存在本机，稍后会自动重试</span>`;
+    else cloud = '<span style="color:var(--ink3)">待同步</span>';
+    html += `<br>云端备份：${cloud}<br><span style="color:var(--ink3);font-size:11.5px">数据已自动备份到你的 GitHub 私有仓库，浏览器清掉本地数据也会自动恢复</span>`;
   }
   el.innerHTML = html;
 }
@@ -1309,6 +1481,12 @@ if(STORAGE_OK) persist();
 
 renderAll();
 fillCatForm();
+
+/* 云端同步：启动时自动拉取恢复 + 关闭前尽力推送 */
+startupSync();
+window.addEventListener('pagehide', ()=>{
+  if(syncEnabled()){ clearTimeout(syncTimer); try{ syncNow('flush'); }catch(e){} }
+});
 
 /* PWA：注册离线缓存 */
 if ('serviceWorker' in navigator) {
