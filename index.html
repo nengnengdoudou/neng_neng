@@ -582,6 +582,7 @@ function persist(){
   db.meta = db.meta || {};
   db.meta.updated = Date.now();
   persistLocalOnly();
+  syncDirty = true;
   scheduleSync();
 }
 
@@ -601,6 +602,7 @@ let syncMsg = '';
 let syncFileSha = null;
 let syncTimer = null;
 let syncChain = Promise.resolve();
+let syncDirty = false;             // 有尚未同步到云端的本地变更
 
 function syncEnabled(){ return !!SYNC.token && SYNC.token !== '__SYNC_TOKEN__'; }
 function syncHeaders(){
@@ -609,6 +611,12 @@ function syncHeaders(){
     'Accept': 'application/vnd.github+json',
     'User-Agent': 'cat-care-app'
   };
+}
+/* 带超时的 fetch：国内访问 GitHub API 可能长时间无响应，超时后转为失败并重试 */
+function fetchTO(url, opts = {}, ms = 20000){
+  const c = new AbortController();
+  const t = setTimeout(()=>c.abort(), ms);
+  return fetch(url, Object.assign({signal: c.signal}, opts)).finally(()=>clearTimeout(t));
 }
 function b64u8decode(b64){
   const bin = atob(String(b64).replace(/\s/g,''));
@@ -643,7 +651,7 @@ function mergeData(a, b){
 }
 
 async function fetchRemote(){
-  const res = await fetch(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}?t=${Date.now()}`, {headers: syncHeaders()});
+  const res = await fetchTO(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}?t=${Date.now()}`, {headers: syncHeaders()});
   if(res.status === 404) return null;                 // 云端还没有备份文件
   if(!res.ok) throw new Error('拉取失败 HTTP ' + res.status);
   const j = await res.json();
@@ -659,7 +667,7 @@ async function putRemote(){
       content: b64u8encode(JSON.stringify(db))
     };
     if(syncFileSha) body.sha = syncFileSha;
-    const res = await fetch(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}`,
+    const res = await fetchTO(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}`,
       {method:'PUT', headers:Object.assign({'Content-Type':'application/json'}, syncHeaders()), body: JSON.stringify(body)});
     if(res.ok){
       const j = await res.json().catch(()=>null);
@@ -718,9 +726,35 @@ async function doSync(reason){
     }
     syncState = 'ok'; syncMsg = fmtTime(Date.now());
   }catch(e){
-    syncState = 'error'; syncMsg = String((e && e.message) || e).slice(0, 60);
+    syncState = 'error';
+    syncMsg = String((e && e.message) || e).slice(0, 60);
+    if(syncMsg.indexOf('AbortError') > -1 || syncMsg.indexOf('Failed to fetch') > -1) syncMsg = '网络不通，会自动重试';
   }
+  if(syncState === 'ok') syncDirty = false;
   renderStorageStatus();
+}
+
+/* 网络恢复/切回应用时自动补传；每分钟重试一次未同步的数据 */
+setInterval(()=>{
+  if(syncEnabled() && syncDirty && syncState !== 'syncing') syncNow('retry');
+}, 60000);
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible' && syncEnabled() && syncDirty && syncState !== 'syncing') syncNow('retry');
+});
+
+/* 关闭/切出页面前，尽力把未同步的数据抢传一次 */
+async function flushNow(){
+  if(!syncEnabled() || !syncDirty) return;
+  try{
+    const H = syncHeaders();
+    const g = await fetchTO(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}?t=${Date.now()}`, {headers:H}, 8000);
+    const body = {message: '猫咪记录备份(退出前)', content: b64u8encode(JSON.stringify(db))};
+    if(g.ok){ body.sha = (await g.json()).sha; }
+    await fetchTO(`https://api.github.com/repos/${SYNC.repo}/contents/${SYNC.file}`,
+      {method:'PUT', headers:Object.assign({'Content-Type':'application/json'}, H),
+       body: JSON.stringify(body), keepalive:true}, 8000);
+    syncDirty = false;
+  }catch(e){ /* 尽力而为；失败留给下次重试 */ }
 }
 
 function startupSync(){
@@ -1474,7 +1508,9 @@ fillCatForm();
 /* 云端同步：启动时自动拉取恢复 + 关闭前尽力推送 */
 startupSync();
 window.addEventListener('pagehide', ()=>{
-  if(syncEnabled()){ clearTimeout(syncTimer); try{ syncNow('flush'); }catch(e){} }
+  clearTimeout(syncTimer);
+  try{ flushNow(); }catch(e){}
+  try{ syncNow('flush'); }catch(e){}
 });
 
 /* PWA：注册离线缓存 */
